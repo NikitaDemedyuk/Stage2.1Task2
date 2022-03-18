@@ -3,9 +3,7 @@ import 'package:path/path.dart' as path;
 
 File normalizePath(String rootPath, String fileName) {
     String filePath = path.join(rootPath, fileName);
-    //stdout.write('${path.join(rootPath, fileName)}\n');
     filePath = path.normalize(filePath);
-    //stdout.write('${path.normalize(filePath)}\n');
     File filePathToRead = new File(filePath);
     stdout.write('$filePathToRead\n');
     return filePathToRead;
