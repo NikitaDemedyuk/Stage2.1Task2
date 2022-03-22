@@ -45,8 +45,8 @@ Future <void> downloadImage(final image, final filePathToRead, final i) async {
 }
 
 Future <void> main () async {
-    List images  = returnListOfImages();
-    List filePathToRead = returnListOfPath();
+    List? images  = returnListOfImages();
+    List? filePathToRead = returnListOfPath();
     for (int i = 0; i < images.length; ++i) {
         downloadImage(images[i], filePathToRead[i], i);
     }
