@@ -1,10 +1,11 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:path/path.dart' as path;
 
 File normalizePath(String rootPath, String fileName) {
-    String filePath = path.join(rootPath, 'images', fileName);    // join "directory" and "file.txt" using the current platform's directory separator
-    filePath = path.normalize(filePath);                          // Normalizes path, simplifying it by handling .., and ., and removing redundant path separators whenever possible.
-    File filePathToRead = new File(filePath);                     // Create an object type File
+    String filePath = path.join(rootPath, 'images', fileName);
+    filePath = path.normalize(filePath);
+    File filePathToRead = new File(filePath);
     stdout.write('$filePathToRead\n');
     return filePathToRead;
 }
@@ -30,14 +31,16 @@ List returnListOfPath() {
     return filePathToRead;
 }
 
-Future <void> downloadImage(final image, final filePathToRead) async {
-  var client = HttpClient();
+Future <void> downloadImage(final image, final filePathToRead, final i) async {
+  final client = HttpClient();
   try {
+      stdout.write('\nStart downloading ${i + 1} image\n');
       final request = await client.getUrl(Uri.parse(image));
       final response = await request.close();
       response.pipe(filePathToRead.openWrite());
     } finally {
       client.close();
+      stdout.write('\nEnd downloading ${i + 1} image\n');
     }
 }
 
@@ -45,7 +48,7 @@ Future <void> main () async {
     List images  = returnListOfImages();
     List filePathToRead = returnListOfPath();
     for (int i = 0; i < images.length; ++i) {
-        downloadImage(images[i], filePathToRead[i]);
+        downloadImage(images[i], filePathToRead[i], i);
     }
 }
 
