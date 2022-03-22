@@ -2,8 +2,8 @@ import 'dart:io';
 import 'package:path/path.dart' as path;
 
 File normalizePath(String rootPath, String fileName) {
-    String filePath = path.join(rootPath, 'images', fileName);   // join "directory" and "file.txt" using the current platform's directory separator
-    filePath = path.normalize(filePath);                         // Normalizes path, simplifying it by handling .., and ., and removing redundant path separators whenever possible.
+    String filePath = path.join(rootPath, 'images', fileName);    // join "directory" and "file.txt" using the current platform's directory separator
+    filePath = path.normalize(filePath);                          // Normalizes path, simplifying it by handling .., and ., and removing redundant path separators whenever possible.
     File filePathToRead = new File(filePath);                     // Create an object type File
     stdout.write('$filePathToRead\n');
     return filePathToRead;
@@ -30,18 +30,22 @@ List returnListOfPath() {
     return filePathToRead;
 }
 
-Future <void> downloadImages(final List images, final List filePathToRead) async {
-    final request = [];
-    for (int i = 0; i < images.length; ++i) {
-        request.add(await HttpClient().getUrl(Uri.parse(images[i])));     // An HTTP client for communicating with an HTTP server.
-        final response = await request[i].close();                        // Opens a HTTP connection using the GET method.
-        response.pipe(filePathToRead[i].openWrite());                     // An IOSink combines a StreamSink of bytes with a StringSink, and allows easy output of both bytes and text.
-                                                                          // .openWrite() - creates a new independent IOSink for the file.
-                                                                          // .pipe() - binds this stream as the input of the provided StreamConsumer.
+Future <void> downloadImage(final image, final filePathToRead) async {
+  var client = HttpClient();
+  try {
+      final request = await client.getUrl(Uri.parse(image));
+      final response = await request.close();
+      response.pipe(filePathToRead.openWrite());
+    } finally {
+      client.close();
     }
 }
 
 Future <void> main () async {
-    await downloadImages(returnListOfImages(), returnListOfPath());
+    List images  = returnListOfImages();
+    List filePathToRead = returnListOfPath();
+    for (int i = 0; i < images.length; ++i) {
+        downloadImage(images[i], filePathToRead[i]);
+    }
 }
 
